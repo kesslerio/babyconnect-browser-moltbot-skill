@@ -1,8 +1,11 @@
 # Dependencies
 node_modules/
 
-# Config files (contain secrets)
+# Config files (contain secrets and field IDs)
 .config/activecampaign/
+fields.json
+
+# Environment files
 .env
 .env.local
 

@@ -6,117 +6,118 @@ metadata: {"clawdbot":{"emoji":"📧","requires":{"bins":["activecampaign"],"env
 
 # ActiveCampaign Skill 📧
 
-ActiveCampaign integration for ShapeScale sales automation.
+ActiveCampaign integration for CRM automation and sales pipeline management.
 
 ## Purpose
 
-Manage leads, deals, and email automations for clinic sales:
+Manage leads, deals, and email automations for sales:
 - **Contacts**: Sync demo attendees, leads, and prospects
-- **Deals**: Track clinic sales pipeline stages
+- **Deals**: Track sales pipeline stages
 - **Tags**: Segment leads (demo-requested, nurture, close-ready)
 - **Automations**: Trigger email sequences based on actions
+- **Custom Fields**: Map order, shipping, billing, and subscription data
 
 ## Setup
+
+### 1. Credentials
 
 ```bash
 # Create config directory
 mkdir -p ~/.config/activecampaign
 
-# Add credentials to environment or config
-echo "https://yourname.api-us1.com" > ~/.config/activecampaign/url
-echo "your_api_key_here" > ~/.config/activecampaign/api_key
+# Add credentials
+echo "https://youraccount.api-us1.com" > ~/.config/activecampaign/url
+echo "your-api-key" > ~/.config/activecampaign/api_key
 
-# Export for skill (add to .bashrc or profile)
-export ACTIVECAMPAIGN_URL=$(cat ~/.config/activecampaign/url)
-export ACTIVECAMPAIGN_API_KEY=$(cat ~/.config/activecampaign/api_key)
+# Or use environment variables
+export ACTIVECAMPAIGN_URL="https://youraccount.api-us1.com"
+export ACTIVECAMPAIGN_API_KEY="your-api-key"
 ```
 
 Get API credentials from ActiveCampaign:
-- **URL**: Settings → Developer → API Access (copy the API URL)
-- **API Key**: Settings → Developer → API Access (copy the API Key)
+- **URL**: Settings → Developer → API Access
+- **API Key**: Settings → Developer → API Access
+
+### 2. Custom Fields Configuration (Optional)
+
+The skill supports custom field mappings for order, shipping, billing, and subscription data.
+
+```bash
+# Initialize config from sample
+activecampaign config init
+
+# Edit with your field IDs
+nano ~/.config/activecampaign/fields.json
+```
+
+The config file is **gitignored** and should not be committed.
 
 ## Usage
 
 ```bash
-# Set credentials once per session
-export ACTIVECAMPAIGN_URL="https://youraccount.api-us1.com"
-export ACTIVECAMPAIGN_API_KEY="your-api-key"
-
 # Contacts
 activecampaign contacts list                    # List all contacts
-activecampaign contacts create "email@test.com" "First Last"  # Create contact
-activecampaign contacts sync "email@test.com"               # Create or update
-activecampaign contacts get <id>                # Get contact by ID
-activecampaign contacts search "clinic"         # Search contacts
-activecampaign contacts add-tag <id> <tag>      # Add tag to contact
-activecampaign contacts remove-tag <id> <tag>   # Remove tag from contact
+activecampaign contacts create "email@test.com" "First" "Last"
+activecampaign contacts sync "email@test.com" "First" "Last"
+activecampaign contacts get <id>
+activecampaign contacts search "clinic"
+activecampaign contacts add-tag <id> <tag_id>
+activecampaign contacts remove-tag <id> <tag_id>
 
 # Deals
-activecampaign deals list                       # List all deals
-activecampaign deals create "Clinic Name" <stage_id> <value>  # Create deal
-activecampaign deals update <id> stage=<stage_id>            # Move deal stage
-activecampaign deals get <id>                   # Get deal details
+activecampaign deals list
+activecampaign deals create "Clinic Name" <stage_id> <value>
+activecampaign deals update <id> stage=<stage_id> value=<value>
+activecampaign deals get <id>
 
 # Tags
-activecampaign tags list                        # List all tags
-activecampaign tags create "Demo Requested"     # Create new tag
-activecampaign tags sync <contact_id> <tag_id>  # Sync tag to contact
+activecampaign tags list
+activecampaign tags create "Demo Requested"
 
 # Automations
-activecampaign automations list                 # List automations
-activecampaign automations add-contact <id> <automation_id>  # Add contact
-
-# Pipelines/Stages
-activecampaign pipelines list                   # List pipelines
-activecampaign stages list                      # List stages in pipeline
-```
-
-## Contact Fields (POST /api/3/contact/sync)
-
-```json
-{
-  "contact": {
-    "email": "clinic@example.com",
-    "firstName": "Dr.",
-    "lastName": "Smith",
-    "phone": "+1-555-123-4567"
-  },
-  "fieldValues": [
-    {"field": "1", "value": "Medical Spa"},
-    {"field": "2", "value": "1000-2000 sq ft"}
-  ]
-}
-```
-
-## Common ShapeScale Workflows
-
-### Sync Demo Lead
-```bash
-# 1. Create/update contact
-activecampaign contacts sync "lead@clinic.com" "Dr. Smith"
-
-# 2. Tag as "Demo Requested"
-activecampaign tags create "Demo Requested"
-# Get tag ID, then:
-activecampaign contacts add-tag <contact_id> <tag_id>
-
-# 3. Add to follow-up automation
+activecampaign automations list
 activecampaign automations add-contact <contact_id> <automation_id>
+
+# Custom Fields
+activecampaign fields list                    # List configured fields
+activecampaign fields get order_fields.order_id
+activecampaign fields set-field <contact_id> <field_id> <value>
+
+# Lists
+activecampaign lists list
+activecampaign lists add-contact <list_id> <contact_id>
+
+# Configuration
+activecampaign config init                    # Create fields.json from sample
+activecampaign config path                    # Show config file path
 ```
 
-### Update Deal Stage
-```bash
-# List available stages first
-activecampaign stages list
+## Custom Fields Configuration
 
-# Move deal to "Proposal Sent"
-activecampaign deals update <deal_id> stage=<stage_id> value=5000
+The skill includes a comprehensive field configuration system for:
+
+| Category | Fields |
+|----------|--------|
+| **Order** | Order ID, Number, Date, Total, Tax, Status, Subtotal, Discount, Currency, Payment details |
+| **Shipping** | Name, Address 1/2, City, State, Postal Code, Country, Method, Cost |
+| **Billing** | Address 1/2, City, State, Postal Code, Country |
+| **Subscription** | ID, Status, Plan, Amount, Currency, Interval, Start, Trial End |
+| **Additional** | Company, Product info, Lead Campaign, Notes, Birthday, etc. |
+
+### Setting Field Values
+
+```bash
+# Get field ID from config
+activecampaign fields get order_fields.order_id
+# Output: 7
+
+# Set field value on contact
+activecampaign fields set-field <contact_id> 7 "ORD-12345"
 ```
 
 ## Rate Limits
 
 - **5 requests per second** max
-- Use batch operations for bulk imports
 - The wrapper handles rate limiting automatically
 
 ## Related Skills
