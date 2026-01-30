@@ -1,7 +1,7 @@
 ---
 name: babyconnect-browser
 description: Log baby activities (bottles, nursing, diapers, sleep) to Baby Connect via browser automation. Use when asked to "log a diaper", "record feeding", "track bottle", "baby ate", "log nursing", "baby is sleeping", "record nap", "diaper change", "fed the baby".
-metadata: {"moltbot": {"emoji": "👶", "requires": {"tools": ["browser", "exec"]}}}
+metadata: {"openclaw": {"emoji": "👶", "requires": {"tools": ["browser", "exec"]}}}
 ---
 
 # Baby Connect Browser Skill
