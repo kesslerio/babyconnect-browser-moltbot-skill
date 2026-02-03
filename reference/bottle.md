@@ -1,5 +1,10 @@
 # Log Bottle (React-Safe + Unit Handling)
 
+## Contents
+- Complete Working Method (2026-01-29)
+- Step-by-Step
+- Key Improvements (2026-01-29)
+
 ## Complete Working Method (2026-01-29)
 
 ```javascript
