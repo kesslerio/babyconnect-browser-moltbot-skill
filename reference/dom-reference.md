@@ -1,5 +1,15 @@
 # Baby Connect DOM Reference
 
+## Contents
+- Children Registry (Configured)
+- Feed Entry Structure
+- Bottle Dialog (showBibDlg)
+- Nursing Dialog (showNursingDlg)
+- Diaper Dialog (showDiaperDlg)
+- Sleep Dialog (showSleepDlg)
+- Time Format
+- All Dialog Functions
+
 ## Children Registry (Configured)
 
 | Child | dlgKid ID (env var) | Default Unit |
